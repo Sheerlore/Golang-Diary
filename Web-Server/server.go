@@ -1,3 +1,7 @@
+//Goで作る基本的なhttpサーバー
+//> go run server.go http://localhost:8081/
+//で起動する 
+
 package main
 
 import (

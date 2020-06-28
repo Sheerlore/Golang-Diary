@@ -1,3 +1,5 @@
+//mutexの使いかた
+
 package main
 
 import (
