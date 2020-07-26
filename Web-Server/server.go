@@ -36,5 +36,5 @@ func main() {
 		fmt.Fprintf(w, "Hi")
 	})
 
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServeTLS(":443", "./server.crt", "./server.key", nil))
 }
