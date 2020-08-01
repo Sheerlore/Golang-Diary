@@ -3,8 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -39,12 +41,39 @@ func returnsingleArticle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func createNewArticle(w http.ResponseWriter, r *http.Request) {
+	//get the body of our POST request
+	//return the string response containing the request body
+	reqBody, _ := ioutil.ReadAll(r.Body)
+	// fmt.Fprintf(w, "%+v", string(reqBody))
+	var article Article
+	json.Unmarshal(reqBody, &article)
+
+	Articles = append(Articles, article)
+	json.NewEncoder(w).Encode(article)
+}
+
+func deleteArticle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	for index, article := range Articles {
+		if article.Id == id {
+			Articles = append(Articles[:index], Articles[index+1:]...)
+		}
+	}
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/", homepage)
-	myRouter.HandleFunc("/all", returnAllArticles)
-	myRouter.HandleFunc("/all/{id}", returnsingleArticle)
+	myRouter.HandleFunc("/articles", returnAllArticles)
+
+	myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
+
+	myRouter.HandleFunc("/article/{id}", deleteArticle).Methods("DELETE")
+	myRouter.HandleFunc("/article/{id}", returnsingleArticle)
 
 	log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
